@@ -855,10 +855,11 @@ describe.each(['token columns', 'lookup table'])('Token searching using %s', (to
           sortRules: [{ code: 'identifier', descending: true }],
         });
 
-        // Counterintuitive results, but yes: the same sort order is expected for both ascending/descending
-        // since ascending should use "AAA" and descending should use "ZZZ"
+        // Ideally ASC and DESC would have the same sort order since
+        // ascending should use "AAA" and descending should use "ZZZ",
+        // but a simpler sort implementation is used
         expect(ascending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['First', 'Second']);
-        expect(descending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['First', 'Second']);
+        expect(descending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['Second', 'First']);
       })
     );
 
