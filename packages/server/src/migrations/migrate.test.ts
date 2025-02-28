@@ -1,4 +1,5 @@
 import { getDataType, InternalTypeSchema } from '@medplum/core';
+import { ResourceType } from '@medplum/fhirtypes';
 import {
   buildCreateTables,
   ColumnDefinition,
@@ -10,7 +11,6 @@ import {
   SchemaDefinition,
   TableDefinition,
 } from './migrate';
-import { ResourceType } from '@medplum/fhirtypes';
 
 describe('Generator', () => {
   describe('buildCreateTables', () => {
@@ -20,7 +20,8 @@ describe('Generator', () => {
 
     test('Patient', () => {
       const result: SchemaDefinition = { tables: [], functions: [] };
-      const dataTypes: [ResourceType, InternalTypeSchema][] = [['Patient', getDataType('Patient')]];
+      const patientDataType = getDataType('Patient');
+      const dataTypes: [ResourceType, InternalTypeSchema][] = [['Patient', patientDataType]];
       for (const [resourceType, typeSchema] of dataTypes) {
         buildCreateTables(result, resourceType, typeSchema);
       }
@@ -33,8 +34,6 @@ describe('Generator', () => {
 
       const table = result.tables.find((t) => t.name === 'Patient') as TableDefinition;
       expect(table).toBeDefined();
-
-      const tokenColumns = ['tokens'];
 
       const expectedColumns: ColumnDefinition[] = [
         {
@@ -140,21 +139,60 @@ describe('Generator', () => {
           type: 'TEXT[]',
           notNull: false,
         },
-        ...tokenColumns.map((name) => {
-          return {
-            name,
-            // defaultValue: 'ARRAY[]::TEXT[]',
-            // notNull: true,
-            // primaryKey: false,
-            type: 'TEXT[]',
-          };
-        }),
+        {
+          name: 'tokens',
+          type: 'TEXT[]',
+        },
+        {
+          name: '_securitySort',
+          type: 'TEXT',
+        },
+        {
+          name: '_tagSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'emailSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'identifierSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'languageSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'phoneSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'telecomSort',
+          type: 'TEXT',
+        },
+        {
+          name: '_compartmentIdentifierSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'generalPractitionerIdentifierSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'linkIdentifierSort',
+          type: 'TEXT',
+        },
+        {
+          name: 'organizationIdentifierSort',
+          type: 'TEXT',
+        },
       ];
 
       const sortFn = (a: { name: string }, b: { name: string }): number => a.name.localeCompare(b.name);
       const actual: ColumnDefinition[] = toSorted(table.columns, sortFn);
       const expected = toSorted(expectedColumns, sortFn);
-      expect(actual.length).toEqual(expected.length);
+      expect(actual.length).toStrictEqual(expected.length);
       for (let i = 0; i < actual.length; i++) {
         expect(columnDefinitionsEqual(actual[i], expected[i])).toBe(true);
       }

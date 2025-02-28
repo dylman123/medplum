@@ -94,7 +94,7 @@ import { patchObject } from '../util/patch';
 import { addBackgroundJobs } from '../workers';
 import { addSubscriptionJobs } from '../workers/subscription';
 import { validateResourceWithJsonSchema } from './jsonschema';
-import { deriveIdentifierSearchParameter } from './lookups/util';
+import { getDerivedSearchParameters } from './lookups/util';
 import { getPatients } from './patient';
 import { replaceConditionalReferences, validateResourceReferences } from './references';
 import { getFullUrl } from './response';
@@ -1353,14 +1353,13 @@ export class Repository extends FhirRepository<PoolClient> implements Disposable
       __version: Repository.VERSION,
     };
 
-    const searchParams = getSearchParameters(resourceType);
+    const searchParams = [
+      ...Object.values(getSearchParameters(resourceType) ?? {}),
+      ...getDerivedSearchParameters(resourceType),
+    ];
     if (searchParams) {
-      for (const searchParam of Object.values(searchParams)) {
+      for (const searchParam of searchParams) {
         this.buildColumn(resource, row, searchParam);
-        if (searchParam.type === 'reference') {
-          const derived = deriveIdentifierSearchParameter(searchParam);
-          this.buildColumn(resource, row, derived);
-        }
       }
     }
     return row;

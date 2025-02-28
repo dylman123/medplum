@@ -825,7 +825,7 @@ describe.each(['token columns', 'lookup table'])('Token searching using %s', (to
         expect(descending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['None', 'ZZZ', 'AAA']);
       }));
 
-    test.failing('FAILING Sort by identifier with multiple values', () =>
+    test('Sort by identifier with multiple values', () =>
       withTestContext(async () => {
         const system = randomUUID();
         await repo.createResource<Patient>({
@@ -860,8 +860,7 @@ describe.each(['token columns', 'lookup table'])('Token searching using %s', (to
         // but a simpler sort implementation is used
         expect(ascending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['First', 'Second']);
         expect(descending.entry?.map((e) => e.resource?.name?.[0]?.family)).toStrictEqual(['Second', 'First']);
-      })
-    );
+      }));
 
     test.each<[string, Conditions[]]>([
       [sys1, ['codeOneNoCat', 'codeOneCatOne', 'codeOneCatTwo']],

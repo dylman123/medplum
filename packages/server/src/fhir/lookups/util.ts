@@ -1,3 +1,4 @@
+import { getSearchParameters } from '@medplum/core';
 import { SearchParameter } from '@medplum/fhirtypes';
 
 /**
@@ -21,4 +22,17 @@ export function deriveIdentifierSearchParameter(inputParam: SearchParameter): Se
     type: 'token',
     expression: `(${inputParam.expression}).identifier`,
   } as SearchParameter;
+}
+
+export function getDerivedSearchParameters(resourceType: string): SearchParameter[] {
+  const result: SearchParameter[] = [];
+  const searchParameters = getSearchParameters(resourceType);
+  if (searchParameters) {
+    for (const searchParameter of Object.values(searchParameters)) {
+      if (searchParameter.type === 'reference') {
+        result.push(deriveIdentifierSearchParameter(searchParameter));
+      }
+    }
+  }
+  return result;
 }

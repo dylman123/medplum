@@ -24,7 +24,7 @@ import {
 } from '../sql';
 import { buildTokensForSearchParameter, getTokenIndexType, isCaseSensitiveSearchParameter, Token } from '../tokens';
 import { LookupTable } from './lookuptable';
-import { deriveIdentifierSearchParameter } from './util';
+import { getDerivedSearchParameters } from './util';
 
 export const ReadFromTokenColumns = {
   value: false,
@@ -233,15 +233,15 @@ function getTableName(resourceType: ResourceType): string {
  * @returns An array of all tokens from the resource to be inserted into the database.
  */
 function getTokens(resource: Resource): Token[] {
-  const searchParams = getSearchParameters(resource.resourceType);
+  const searchParams = [
+    ...Object.values(getSearchParameters(resource.resourceType) ?? {}),
+    ...getDerivedSearchParameters(resource.resourceType),
+  ];
   const result: Token[] = [];
   if (searchParams) {
-    for (const searchParam of Object.values(searchParams)) {
+    for (const searchParam of searchParams) {
       if (getTokenIndexType(searchParam, resource.resourceType)) {
         buildTokensForSearchParameter(result, resource, searchParam);
-      }
-      if (searchParam.type === 'reference') {
-        buildTokensForSearchParameter(result, resource, deriveIdentifierSearchParameter(searchParam));
       }
     }
   }
