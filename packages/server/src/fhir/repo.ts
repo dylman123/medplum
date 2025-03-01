@@ -94,7 +94,6 @@ import { patchObject } from '../util/patch';
 import { addBackgroundJobs } from '../workers';
 import { addSubscriptionJobs } from '../workers/subscription';
 import { validateResourceWithJsonSchema } from './jsonschema';
-import { TokenColumnsFeature } from './lookups/token';
 import { getDerivedSearchParameters } from './lookups/util';
 import { getPatients } from './patient';
 import { replaceConditionalReferences, validateResourceReferences } from './references';
@@ -114,7 +113,7 @@ import {
   periodToRangeString,
 } from './sql';
 import { getBinaryStorage } from './storage';
-import { buildTokenColumns } from './token-column';
+import { buildTokenColumns, TokenColumnsFeature } from './token-column';
 
 const transactionAttempts = 2;
 const retryableTransactionErrorCodes = ['40001'];
